@@ -28,17 +28,23 @@ def amortizationSchedule( principal, term, rate ):
 import datetime
 from monthdelta import MonthDelta
 
-P,Y,R,I,detail = 360000,15,3.87,6000,1
-## (Date, Principal, Months, Interest rate by month)
-plans = [
+## plan : (Date, Principal, Months, Interest rate by month)
+### interest rate hisotry of china : http://data.bank.hexun.com/ll/dkll.aspx?page=1
+plans_f = [
     (datetime.date(2009,4,20), 360000, 15*12, 3.87/12.0/100.0),
     (datetime.date(2011,1,20), 0,0, 4.30/12.0/100.0),
     (datetime.date(2012,1,20), 0,0, 4.90/12.0/100.0),
     (datetime.date(2013,1,20), 0,0, 4.50/12.0/100.0),
     (datetime.date(2015,1,20), 0,0, 4.20/12.0/100.0),
     ]
+plans_f = [
+    (datetime.date(2013,4,27), 570000,20*12, 6.55/12.0/100.0),
+    (datetime.date(2015,1,27), 0,0, 6.15/12.0/100.0),
+    ]
 
-## <date: (remaining n terms, pay, principal part of pay, remaining principal)>
+plans = plans_f
+
+## term : <date: (remaining n terms, pay, principal part of pay, remaining principal)>
 terms = {}
 D,P,N,I =0,0,0,0
 for (pD, pP, pN, pI) in plans:
