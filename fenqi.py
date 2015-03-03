@@ -48,7 +48,7 @@ def MonthAddN(other, n):
           raise OverflowError('date value out of range')
 
 
-## plan : (Date, Principal, Months, Interest rate by month)
+## plan : (DATE initial or adjust, PRINCIPAL initial or adjust, MONTHS initial or adjust, INTEREST rate by month)
 ### interest rate hisotry of china : http://data.bank.hexun.com/ll/dkll.aspx?page=1
 plans_f = [
     (datetime.date(2009,4,20), 360000, 15*12, 3.87/12.0/100.0),
@@ -56,18 +56,17 @@ plans_f = [
     (datetime.date(2012,1,20), 0,0, 4.90/12.0/100.0),
     (datetime.date(2013,1,20), 0,0, 4.50/12.0/100.0),
     (datetime.date(2015,1,20), 0,0, 4.20/12.0/100.0),
-    ]
-plans_f = [
+    ]    
+plans_q = [
     (datetime.date(2013,4,27), 570000,20*12, 6.55/12.0/100.0),
     (datetime.date(2015,1,27), 0,0, 6.15/12.0/100.0),
     (datetime.date(2015,4,27), 0-200000,0-10*12, 6.15/12.0/100.0),
     ]
 
-plans = plans_f
+plans = plans_q
 
 ## term : <date: (remaining n terms, pay, principal part of pay, remaining principal)>
 terms = {}
-D,P,N,I =0,0,0,0
 for (pD, pP, pN, pI) in plans:
     (N,fdsaf,dsaf,P) = terms.get(MonthAddN(pD,-1),(0,0,0,0))    
     terms = {d:terms[d] for d in terms if d<pD}
@@ -80,9 +79,11 @@ for (pD, pP, pN, pI) in plans:
     
 
 ##############################
-paid_principal, paid_interest = 0, 0
 
+print("#date#", "#MONTHS#", "#payment#", "#principal#", "@@@", "#PRINCIPAL#", "#PAID#", "#INTERESTS#")
+
+paid_principal, paid_interest = 0, 0
 l = sorted(terms.keys())
 for d in l:
   paid_principal, paid_interest = round(paid_principal+terms[d][2],2), round(paid_interest+(terms[d][1]-terms[d][2]),2)
-  print(d, terms[d], "PaidAll:", round(paid_principal+paid_interest,2), "PaidInt:", paid_interest)
+  print(d, terms[d],  round(paid_principal+paid_interest,2),  paid_interest)
