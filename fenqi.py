@@ -29,21 +29,32 @@ import datetime
 import monthdelta
 
 P,Y,R,I,detail = 360000,15,3.87,6000,1
-## (Date, Principal, Months, Interest rate)
+## (Date, Principal, Months, Interest rate by month)
 plans = [
-    (datetime.date(2009,4,1), 360000, 15*12, 3.87/12.0/100.0),
+    (datetime.date(2009,4,20), 360000, 15*12, 3.87/12.0/100.0),
+    (datetime.date(2011,1,20), 0,0, 4.30/12.0/100.0),
+    (datetime.date(2012,1,20), 0,0, 4.90/12.0/100.0),
+    (datetime.date(2013,1,20), 0,0, 4.50/12.0/100.0),
+    (datetime.date(2015,1,20), 0,0, 4.20/12.0/100.0),
     ]
 
-## <date: (pay, principal part of pay, interest part of pay, remaining principal)>
+## <date: (remaining n terms, pay, principal part of pay, remaining principal)>
 terms = {}
 D,P,N,I =0,0,0,0
-for (pD, pP, pN, pI) in plans:    
-    D, P, N, I = pD, P+pP, N+pN, pI    
+for (pD, pP, pN, pI) in plans:
+    (N,fdsaf,dsaf,P) = terms.get(pD,(0,0,0,0))    
+    D, P, N, I = pD, P+pP, N+pN, pI
+
+    print("------------",D, P, N, I)
+
     for(i, pmt, int, princ, remaining) in amortizationSchedule(P, N, I):
-        terms[D+monthdelta.MonthDelta(i)] = (pmt, princ, int, remaining)
+        terms[D+monthdelta.MonthDelta(i-1)] = (N-i, round(pmt,2), round(princ,2), round(remaining,2))
     #todo: remove terms after D
 
+##############################
+paid_principal, paid_interest = 0, 0
 
-    
-for t in terms:
-  print(t, terms[t])
+l = sorted(terms.keys())
+for d in l:
+  paid_principal, paid_interest = round(paid_principal+terms[d][2],2), round(paid_interest+(terms[d][1]-terms[d][2]),2)
+  print(d, terms[d], "PaidAll:", round(paid_principal+paid_interest,2), "PaidInt:", paid_interest)
