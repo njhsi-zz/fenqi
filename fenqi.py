@@ -26,7 +26,7 @@ def amortizationSchedule( principal, term, rate ):
  
 ##################################
 import datetime
-import monthdelta
+from monthdelta import MonthDelta
 
 P,Y,R,I,detail = 360000,15,3.87,6000,1
 ## (Date, Principal, Months, Interest rate by month)
@@ -42,13 +42,13 @@ plans = [
 terms = {}
 D,P,N,I =0,0,0,0
 for (pD, pP, pN, pI) in plans:
-    (N,fdsaf,dsaf,P) = terms.get(pD,(0,0,0,0))    
+    (N,fdsaf,dsaf,P) = terms.get(pD-MonthDelta(1),(0,0,0,0))    
     D, P, N, I = pD, P+pP, N+pN, pI
 
     print("------------",D, P, N, I)
 
     for(i, pmt, int, princ, remaining) in amortizationSchedule(P, N, I):
-        terms[D+monthdelta.MonthDelta(i-1)] = (N-i, round(pmt,2), round(princ,2), round(remaining,2))
+        terms[D+MonthDelta(i-1)] = (N-i, round(pmt,2), round(princ,2), round(remaining,2))
     #todo: remove terms after D
 
 ##############################
