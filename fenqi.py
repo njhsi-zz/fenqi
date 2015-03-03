@@ -40,6 +40,7 @@ plans_f = [
 plans_f = [
     (datetime.date(2013,4,27), 570000,20*12, 6.55/12.0/100.0),
     (datetime.date(2015,1,27), 0,0, 6.15/12.0/100.0),
+    (datetime.date(2015,4,27), 0-200000,0-10*12, 6.15/12.0/100.0),
     ]
 
 plans = plans_f
@@ -49,13 +50,14 @@ terms = {}
 D,P,N,I =0,0,0,0
 for (pD, pP, pN, pI) in plans:
     (N,fdsaf,dsaf,P) = terms.get(pD-MonthDelta(1),(0,0,0,0))    
+    terms = {d:terms[d] for d in terms if d<pD}
     D, P, N, I = pD, P+pP, N+pN, pI
 
     print("------------",D, P, N, I)
 
     for(i, pmt, int, princ, remaining) in amortizationSchedule(P, N, I):
         terms[D+MonthDelta(i-1)] = (N-i, round(pmt,2), round(princ,2), round(remaining,2))
-    #todo: remove terms after D
+    
 
 ##############################
 paid_principal, paid_interest = 0, 0
