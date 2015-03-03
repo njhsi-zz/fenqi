@@ -22,11 +22,31 @@ def amortizationSchedule( principal, term, rate ):
  
  
  
- 
+
  
 ##################################
+#from monthdelta import MonthDelta
 import datetime
-from monthdelta import MonthDelta
+## copied this from MonthDelta
+def MonthAddN(other, n): 
+      day = other.day
+      # subract one because months are not zero-based
+      month = other.month + n - 1
+      year = other.year + month // 12
+      # now add it back
+      month = month % 12 + 1
+      if month == 2:
+          if day >= 29 and not year%4 and (year%100 or not year%400):
+              day = 29
+          elif day > 28:
+              day = 28
+      elif month in (4,6,9,11) and day > 30:
+          day = 30
+      try:
+          return other.replace(year, month, day)
+      except ValueError:
+          raise OverflowError('date value out of range')
+
 
 ## plan : (Date, Principal, Months, Interest rate by month)
 ### interest rate hisotry of china : http://data.bank.hexun.com/ll/dkll.aspx?page=1
@@ -49,14 +69,14 @@ plans = plans_f
 terms = {}
 D,P,N,I =0,0,0,0
 for (pD, pP, pN, pI) in plans:
-    (N,fdsaf,dsaf,P) = terms.get(pD-MonthDelta(1),(0,0,0,0))    
+    (N,fdsaf,dsaf,P) = terms.get(MonthAddN(pD,-1),(0,0,0,0))    
     terms = {d:terms[d] for d in terms if d<pD}
     D, P, N, I = pD, P+pP, N+pN, pI
 
     print("------------",D, P, N, I)
 
     for(i, pmt, int, princ, remaining) in amortizationSchedule(P, N, I):
-        terms[D+MonthDelta(i-1)] = (N-i, round(pmt,2), round(princ,2), round(remaining,2))
+        terms[MonthAddN(D,(i-1))] = (N-i, round(pmt,2), round(princ,2), round(remaining,2))
     
 
 ##############################
